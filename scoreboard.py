@@ -1,9 +1,9 @@
 class Scoreboard:
-    def __init__(self):
-        self.score = 0
+    def __init__(self, score_num: int):
+        self.scores = [0]*score_num
 
-    def update(self):
-        self.score += 1
+    def update(self, score_id):
+        self.scores[score_id] += 1
 
-    def get_score(self):
-        return self.score
+    def get_score(self, score_id):
+        return self.scores[score_id]

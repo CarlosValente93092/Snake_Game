@@ -12,13 +12,15 @@ class Snake():
         self.dead = False
 
         self.color = color
-        self.score = Scoreboard()
         self.controls = controls  # 1 - arrow keys, 2 - WASD
 
-    def move(self, direction: Directions = None):
-        """Add one piece, pop one out."""
+        self.current_state = 0  # States: STARTING, STOP, MOVE, EAT, GROW, DEAD
+        self.food_to_eat = -1
+        self.id = 0
 
-        if direction:
+    def move(self, key, direction):
+        """Add one piece, pop one out."""
+        if self.confirm_key_input(key) and self.check_movement(direction):
             self.direction = direction
 
         # Sum current head position with direction vector
@@ -33,9 +35,7 @@ class Snake():
 
     def crashed_into_itself(self):
         # Check we didn't eat our selves
-        if self.snake_body.count(self.snake_body[0]) > 1:
-            logging.info("Snake eats self")
-            self.dead = True
+        return self.snake_body.count(self.snake_body[0]) > 1
 
     def kill(self):
         logging.info("Snake died")
@@ -47,9 +47,6 @@ class Snake():
             self.score.update()
             return True
         return False
-
-    def get_score(self):
-        return self.score.get_score()
 
     def crashed_into_wall(self, width, height):
         for pos, snake_part in enumerate(self.snake_body):
@@ -72,8 +69,31 @@ class Snake():
         return (self.controls == 1 and key in Controls.KEYS) or \
             (self.controls == 2 and key in Controls.WASD)
 
-    def check_movement(self, direction):
+    def check_movement(self, direction) -> bool:
         return not ((self.direction == Directions.RIGHT and direction == Directions.LEFT) or
                     (self.direction == Directions.LEFT and direction == Directions.RIGHT) or
                     (self.direction == Directions.UP and direction == Directions.DOWN) or
                     (self.direction == Directions.DOWN and direction == Directions.UP))
+
+    def get_current_state(self) -> None:
+        return self.current_state
+
+    def set_current_state(self, state):
+        self.current_state = state
+
+    def check_food(self, foods: list) -> bool:
+        for index, food in enumerate(foods):
+            if food.get_pos() == self.snake_body[0]:
+                self.food_to_eat = index
+                return True
+        self.food_to_eat = -1
+        return False
+
+    def grow(self) -> None:
+        self.snake_length += 1
+
+    def set_id(self, id):
+        self.id = id
+
+    def get_id(self):
+        return self.id

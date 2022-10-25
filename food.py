@@ -24,6 +24,6 @@ class Food():
         return Food(self.start_width, self.stop_width, self.start_height, self.stop_height)
 
 
-class Spawner:
-    def spawn_food(self, prototype) -> Food:
+class FoodSpawner:
+    def spawn_food(self, prototype: Food) -> Food:
         return prototype.clone()
